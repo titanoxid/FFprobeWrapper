@@ -18,12 +18,12 @@ namespace FFprobeWrapper.Library
             Filename = filename;
         }
 
-        public string GetVideoFramerate()
+        public double GetVideoFramerate()
         {
             var process = FFprobe.GetProcess();
             process.StartInfo.Arguments = GetStartArgument(FFprobeParameter.VideoFramerate);
-            var framerateString = GetProcessOutput(process);
-            var framerate = ConvertFramerateString(framerateString);
+            var output = GetProcessOutput(process);
+            var framerate = ConvertToDouble(output);
             return framerate;
         }
 
@@ -35,11 +35,12 @@ namespace FFprobeWrapper.Library
             return dimension;
         }
 
-        public string GetVideoDuration()
+        public TimeSpan GetVideoDuration()
         {
             var process = FFprobe.GetProcess();
             process.StartInfo.Arguments = GetStartArgument(FFprobeParameter.VideoDuration);
-            var duration = GetProcessOutput(process);
+            var output = GetProcessOutput(process);
+            var duration = ConvertToTimeSpan(output);
             return duration;
         }
 
@@ -126,27 +127,28 @@ namespace FFprobeWrapper.Library
             return output;
         }
 
-        public async Task<string> GetVideoFramerateAsync()
+        public async Task<double> GetVideoFramerateAsync()
         {
             var ffprobeProcess = FFprobe.GetProcess();
             ffprobeProcess.StartInfo.Arguments = GetStartArgument(FFprobeParameter.VideoFramerate);
             var framerate = await Task.Run(async () =>
             {
                 var output = await GetProcessOutputAsync(ffprobeProcess);
-                var computedFramerate = ConvertFramerateString(output);
-                return computedFramerate;
+                var data = ConvertToDouble(output);
+                return data;
             });
             return framerate;
         }
 
-        public async Task<string> GetVideoDurationAsync()
+        public async Task<TimeSpan> GetVideoDurationAsync()
         {
             var ffprobeProcess = FFprobe.GetProcess();
             ffprobeProcess.StartInfo.Arguments = GetStartArgument(FFprobeParameter.VideoDuration);
             var duration = await Task.Run(async () =>
             {
                 var output = await GetProcessOutputAsync(ffprobeProcess);
-                return output;
+                var data = ConvertToTimeSpan(output);
+                return data;
             });
             return duration;
         }
